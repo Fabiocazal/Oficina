@@ -22,20 +22,28 @@ export class OrdensDeServicoAddEditPage implements OnInit {
     private clientesService: ClientesService,
     private datePicker: DatePicker,
     private platform: Platform,
+    private route: ActivateRoute,
+    private ordensDeServicoService: OrdensDeServicoService,
   ) { }
 
   async ngOnInit() {
   }
 
   async ionViewWillEnter() {
+    const id = this.route.snapshot.paramMap.get('id');
     const clientes = await this.clientesService.getAll();
     this.clientes = clientes;
-    this.ordemDeServico = {
-      ordemdeservicoid: Guid.createEmpty().toString(),
-      clienteid: Guid.createEmpty().toString(),
-      veiculo: '',
-      dataehoraentrada: new Date()
-    };
+    if(id != null) {
+      const isIdEmptyGUID = Guid.parse(id).isEmpty();
+      const IsIdValidGUID = Guid.isGuid(id);
+      if (id && !isIdEmptyGUID && IsIdValidGUID) {
+        this.ordensDeServicoService.getById(id);
+      }else {
+        this.ordemDeServico = (ordemdeservicoid: Guid.createEmpty().toString(),clienteid: Guid.createEmpty(), toString(), veiculo: '', dataehoraentrada: new Date());
+        this.modoDeEdicao = true;
+
+      }
+    }
     this.modoDeEdicao = true;
     this.osForm = this.formBuilder.group({
       ordemdeservicoid: [this.ordemDeServico.ordemdeservicoid],
